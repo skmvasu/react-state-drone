@@ -21,16 +21,35 @@ import './App.css';
 // We would be looking for application design, object modeling, data modeling (if any), coding practices followed to evaluate your solution. You may want to include unit test cases to support your solution. 
 
 // We would like the code to be version controlled using Git. Please do not upload it to bitbucket or github but instead zip the entire code repository and send it to us.
-
 export const DroneStatus = {
-  WAITING_FOR_INSTRUCTIONS: 'WAITING_FOR_INSTRUCTIONS',
-  ITEM_PICKUP: 'ITEM_PICKUP',
-  ARRIVED_AT_DELIVERY_ADDRESS: 'ARRIVED_AT_DELIVERY_ADDRESS',
-  UNLOADED_ITEM: 'UNLOADED_ITEM',
-  WAY_BACK_TO_COMMAND_CENTRE: 'WAY_BACK_TO_COMMAND_CENTRE'
+  WAITING_FOR_INSTRUCTIONS: "zzz",
+  ITEM_PICKUP: "Picking up from the warehouse",
+  ARRIVED_AT_DELIVERY_ADDRESS: "Knock! Knock!",
+  UNLOADED_ITEM: "You've been served",
+  WAY_BACK_TO_COMMAND_CENTRE: "on the way back"
+};
+
+export const PackageStatus = {
+  PROCESSING: "We're processing you order",
+  ITEM_PICKEDUP: "package pickedup  from the warehouse",
+  ON_THE_WAY: "Should reach you soon",
+  DELIVERD: "Delivered"
 };
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      drone: {
+        name: 'Millenium Falcon', 
+        status: DroneStatus.WAITING_FOR_INSTRUCTIONS
+      }, item: {
+        name: 'Light saber',
+        status: PackageStatus.PROCESSING
+      }
+    };
+  }
+  
   render() {
     return (
       <div className="App">
@@ -39,7 +58,9 @@ class App extends Component {
           <h2>Scripbox Drone task</h2>
         </div>
         <p className="App-intro">
-          
+		      <Drone 
+            item={this.state.item}
+            drone={this.state.drone} />
         </p>
       </div>
     );
@@ -47,3 +68,15 @@ class App extends Component {
 }
 
 export default App;
+
+class Drone extends Component {
+  render() {
+    const {drone} = this.props;
+    return (
+        <div>
+          <h4> {drone.name}</h4>
+          {drone.status} 
+        </div>
+    );
+  }
+}
