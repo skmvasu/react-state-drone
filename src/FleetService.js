@@ -11,12 +11,14 @@ export const pickupItem = (drone) => {
 
 export const updateLocation = (drone) => {
   return Promise.resolve({
+      item: 1,
       status: DroneStatus.ARRIVED_AT_DELIVERY_ADDRESS
   });
 }
 
 export const deliverItem = (drone) => {
   return Promise.resolve({
+      item: 1,
       status: DroneStatus.DELIVER_ITEM
   });
 }
