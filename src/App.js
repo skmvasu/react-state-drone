@@ -39,15 +39,24 @@ export const PackageStatus = {
 class App extends Component {
   constructor(props) {
     super(props);
+    this.getInstructions = this.getInstructions.bind(this);
     this.state = {
       drone: {
         name: 'Millenium Falcon', 
         status: DroneStatus.WAITING_FOR_INSTRUCTIONS
-      }, item: {
-        name: 'Light saber',
-        status: PackageStatus.PROCESSING
+      }, items: {
+        1: {
+          name: 'Light saber',
+          status: PackageStatus.PROCESSING
+        }
       }
     };
+  }
+
+  getInstructions(drone) {
+    getInstructions(drone).then(updated_state => {
+      this.setState({drone: {...drone, ...updated_state}});
+    });
   }
   
   render() {
@@ -57,11 +66,12 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h2>Scripbox Drone task</h2>
         </div>
-        <p className="App-intro">
+        <div className="App-intro">
 		      <Drone 
+            getInstructions={this.getInstructions}
             item={this.state.item}
             drone={this.state.drone} />
-        </p>
+        </div>
       </div>
     );
   }
@@ -70,6 +80,13 @@ class App extends Component {
 export default App;
 
 class Drone extends Component {
+  componentDidMount() {
+    const {drone} = this.props;
+    if (drone.status === DroneStatus.WAITING_FOR_INSTRUCTIONS) {
+      setTimeout(() => this.props.getInstructions(drone), 1000);
+    }
+  }
+
   render() {
     const {drone} = this.props;
     return (
@@ -79,4 +96,13 @@ class Drone extends Component {
         </div>
     );
   }
+}
+
+export const getInstructions = (drone) => {
+  // In real life this will make a HTTP call
+  // Let's keep things simple and assume there is a server processing these requests
+  return Promise.resolve({
+      item : 1, 
+      status: DroneStatus.ITEM_PICKUP
+  });
 }
