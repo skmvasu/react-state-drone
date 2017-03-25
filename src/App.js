@@ -25,8 +25,8 @@ export const DroneStatus = {
   WAITING_FOR_INSTRUCTIONS: "zzz",
   ITEM_PICKUP: "Picking up from the warehouse",
   ARRIVED_AT_DELIVERY_ADDRESS: "Knock! Knock!",
-  UNLOADED_ITEM: "You've been served",
-  WAY_BACK_TO_COMMAND_CENTRE: "on the way back"
+  DELIVER_ITEM: "You've been served",
+  WAY_BACK_TO_COMMAND_CENTER: "on the way back"
 };
 
 export const PackageStatus = {
@@ -39,7 +39,7 @@ export const PackageStatus = {
 class App extends Component {
   constructor(props) {
     super(props);
-    this.getInstructions = this.getInstructions.bind(this);
+    this.pickupItem = this.pickupItem.bind(this);
     this.state = {
       drone: {
         name: 'Millenium Falcon', 
@@ -53,12 +53,40 @@ class App extends Component {
     };
   }
 
-  getInstructions(drone) {
-    getInstructions(drone).then(updated_state => {
+  pickupItem(drone) {
+    pickupItem(drone).then(updated_state => {
+      timeout(() => this.updateLocation(drone));
+      this.setState({drone: {...drone, ...updated_state}});
+    });
+  }
+
+  updateLocation(drone) {
+    updateLocation(drone).then(updated_state => {
+      timeout(() => this.deliverItem(drone));
       this.setState({drone: {...drone, ...updated_state}});
     });
   }
   
+  deliverItem(drone) {
+    deliverItem(drone).then(updated_state => {
+      timeout(() => this.returnToCommandCenter(drone));
+      this.setState({drone: {...drone, ...updated_state}});
+    });
+  }
+
+  returnToCommandCenter(drone) {
+    returnToCommandCenter(drone).then(updated_state => {
+      timeout(() => this.untillNextTime(drone));
+      this.setState({drone: {...drone, ...updated_state}});
+    });
+  }
+
+  untillNextTime(drone) {
+    untillNextTime(drone).then(updated_state => {
+      this.setState({drone: {...drone, ...updated_state}});
+    });
+  }
+
   render() {
     return (
       <div className="App">
@@ -68,7 +96,7 @@ class App extends Component {
         </div>
         <div className="App-intro">
 		      <Drone 
-            getInstructions={this.getInstructions}
+            pickupItem={this.pickupItem}
             item={this.state.item}
             drone={this.state.drone} />
         </div>
@@ -83,7 +111,7 @@ class Drone extends Component {
   componentDidMount() {
     const {drone} = this.props;
     if (drone.status === DroneStatus.WAITING_FOR_INSTRUCTIONS) {
-      setTimeout(() => this.props.getInstructions(drone), 1000);
+      timeout(() => this.props.pickupItem(drone));
     }
   }
 
@@ -98,7 +126,7 @@ class Drone extends Component {
   }
 }
 
-export const getInstructions = (drone) => {
+export const pickupItem = (drone) => {
   // In real life this will make a HTTP call
   // Let's keep things simple and assume there is a server processing these requests
   return Promise.resolve({
@@ -106,3 +134,31 @@ export const getInstructions = (drone) => {
       status: DroneStatus.ITEM_PICKUP
   });
 }
+
+export const updateLocation = (drone) => {
+  return Promise.resolve({
+      status: DroneStatus.ARRIVED_AT_DELIVERY_ADDRESS
+  });
+}
+
+export const deliverItem = (drone) => {
+  return Promise.resolve({
+      status: DroneStatus.DELIVER_ITEM
+  });
+}
+
+export const returnToCommandCenter = (drone) => {
+  return Promise.resolve({
+      status: DroneStatus.WAY_BACK_TO_COMMAND_CENTER
+  });
+}
+
+export const untillNextTime = (drone) => {
+  return Promise.resolve({
+      status: DroneStatus.WAITING_FOR_INSTRUCTIONS
+  });
+}
+
+const timeout = (callback) => {
+  setTimeout(callback, 1000);
+};
