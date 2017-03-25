@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { pickupItem,
+import {
+  pickupItem,
   updateLocation,
   deliverItem,
   returnToCommandCenter,
-  untillNextTime} from './FleetService.js';
-import {DroneStatus, PackageStatus} from './constants.js';
+  untillNextTime
+} from './FleetService.js';
+import { DroneStatus, PackageStatus } from './constants.js';
 
 // Build an application to operate a fleet of drones delivering goods:
 
@@ -35,7 +37,7 @@ class App extends Component {
     this.pickupItem = this.pickupItem.bind(this);
     this.state = {
       drone: {
-        name: 'Millenium Falcon', 
+        name: 'Millenium Falcon',
         status: DroneStatus.WAITING_FOR_INSTRUCTIONS
       }, items: {
         1: {
@@ -49,24 +51,30 @@ class App extends Component {
   pickupItem(drone) {
     pickupItem(drone).then(drone_state => {
       timeout(() => this.updateLocation(drone));
-      this.setState(updateState(this.state, drone_state, {status: 
-          PackageStatus.ITEM_PICKEDUP}));
+      this.setState(updateState(this.state, drone_state, {
+        status:
+        PackageStatus.ITEM_PICKEDUP
+      }));
     });
   }
 
   updateLocation(drone) {
     updateLocation(drone).then(drone_state => {
       timeout(() => this.deliverItem(drone));
-      this.setState(updateState(this.state, drone_state, {status: 
-          PackageStatus.ON_THE_WAY}));
+      this.setState(updateState(this.state, drone_state, {
+        status:
+        PackageStatus.ON_THE_WAY
+      }));
     });
   }
-  
+
   deliverItem(drone) {
     deliverItem(drone).then(drone_state => {
       timeout(() => this.returnToCommandCenter(drone));
-      this.setState(updateState(this.state, drone_state, {status: 
-          PackageStatus.DELIVERD}));
+      this.setState(updateState(this.state, drone_state, {
+        status:
+        PackageStatus.DELIVERD
+      }));
     });
   }
 
@@ -91,7 +99,7 @@ class App extends Component {
           <h2>Scripbox Drone task</h2>
         </div>
         <div className="App-intro">
-		      <Drone 
+          <Drone
             pickupItem={this.pickupItem}
             items={this.state.items}
             drone={this.state.drone} />
@@ -105,21 +113,21 @@ export default App;
 
 export class Drone extends Component {
   componentDidMount() {
-    const {drone} = this.props;
+    const { drone } = this.props;
     if (drone.status === DroneStatus.WAITING_FOR_INSTRUCTIONS) {
       timeout(() => this.props.pickupItem(drone));
     }
   }
 
   render() {
-    const {drone, items} = this.props;
+    const { drone, items } = this.props;
     return (
-        <div>
-          <h4> {drone.name}</h4>
-          {drone.item 
-            && <div> Assigned to item => <em>{items[drone.item].name}</em></div> }
-          {drone.status} 
-        </div>
+      <div>
+        <h4> {drone.name}</h4>
+        {drone.item
+          && <div> Assigned to item => <em>{items[drone.item].name}</em></div>}
+        {drone.status}
+      </div>
     );
   }
 }
@@ -130,11 +138,11 @@ const timeout = (callback) => {
 
 export const updateState = (state, drone_status, item_status) => {
   const item = drone_status.item;
-  const {status} = drone_status;
-  const updated_items = item_status ? {...state.items, [item]: {...state.items[item], status: item_status.status}} : state.items;
+  const { status } = drone_status;
+  const updated_items = item_status ? { ...state.items, [item]: { ...state.items[item], status: item_status.status } } : state.items;
 
   return {
-    drone: {...state.drone, status, item},
+    drone: { ...state.drone, status, item },
     items: updated_items
   };
 }
