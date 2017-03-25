@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import {
@@ -96,7 +97,7 @@ class App extends Component {
       <div className="App">
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h2>Scripbox Drone task</h2>
+          <h2>Simple Drone State Manger</h2>
         </div>
         <div className="App-intro">
           <Drone
