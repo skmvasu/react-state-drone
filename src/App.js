@@ -33,7 +33,6 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.pickupItem = this.pickupItem.bind(this);
-    this.updateState = this.updateState.bind(this);
     this.state = {
       drone: {
         name: 'Millenium Falcon', 
@@ -47,48 +46,40 @@ class App extends Component {
     };
   }
 
-  updateState(updated_state, item_status) {
-    const item = updated_state.item;
-    const {status} = updated_state;
-    const updated_items = item ? {...this.state.items, [item]: {...this.state.items[item], status: item_status.status}} : this.state.items;
-
-    return this.setState({
-      drone: {...this.state.drone, status, item},
-      items: updated_items
-    });
-  }
-
   pickupItem(drone) {
-    pickupItem(drone).then(updated_state => {
+    pickupItem(drone).then(drone_state => {
       timeout(() => this.updateLocation(drone));
-      this.updateState(updated_state, {status: PackageStatus.ITEM_PICKEDUP} );
+      this.setState(updateState(this.state, drone_state, {status: 
+          PackageStatus.ITEM_PICKEDUP}));
     });
   }
 
   updateLocation(drone) {
-    updateLocation(drone).then(updated_state => {
+    updateLocation(drone).then(drone_state => {
       timeout(() => this.deliverItem(drone));
-      this.updateState(updated_state, {status: PackageStatus.ON_THE_WAY});
+      this.setState(updateState(this.state, drone_state, {status: 
+          PackageStatus.ON_THE_WAY}));
     });
   }
   
   deliverItem(drone) {
-    deliverItem(drone).then(updated_state => {
+    deliverItem(drone).then(drone_state => {
       timeout(() => this.returnToCommandCenter(drone));
-      this.updateState(updated_state, {status: PackageStatus.DELIVERD});
+      this.setState(updateState(this.state, drone_state, {status: 
+          PackageStatus.DELIVERD}));
     });
   }
 
   returnToCommandCenter(drone) {
-    returnToCommandCenter(drone).then(updated_state => {
+    returnToCommandCenter(drone).then(drone_state => {
       timeout(() => this.untillNextTime(drone));
-      this.updateState(updated_state);
+      this.setState(updateState(this.state, drone_state));
     });
   }
 
   untillNextTime(drone) {
-    untillNextTime(drone).then(updated_state => {
-      this.updateState(updated_state);
+    untillNextTime(drone).then(drone_state => {
+      this.setState(updateState(this.state, drone_state));
     });
   }
 
@@ -112,7 +103,7 @@ class App extends Component {
 
 export default App;
 
-class Drone extends Component {
+export class Drone extends Component {
   componentDidMount() {
     const {drone} = this.props;
     if (drone.status === DroneStatus.WAITING_FOR_INSTRUCTIONS) {
@@ -126,9 +117,7 @@ class Drone extends Component {
         <div>
           <h4> {drone.name}</h4>
           {drone.item 
-            && <div>
-              Assigned to item => <em>{items[drone.item].name}</em>
-          </div> }
+            && <div> Assigned to item => <em>{items[drone.item].name}</em></div> }
           {drone.status} 
         </div>
     );
@@ -138,3 +127,14 @@ class Drone extends Component {
 const timeout = (callback) => {
   setTimeout(callback, 1000);
 };
+
+export const updateState = (state, drone_status, item_status) => {
+  const item = drone_status.item;
+  const {status} = drone_status;
+  const updated_items = item_status ? {...state.items, [item]: {...state.items[item], status: item_status.status}} : state.items;
+
+  return {
+    drone: {...state.drone, status, item},
+    items: updated_items
+  };
+}
