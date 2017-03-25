@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { pickupItem,
+  updateLocation,
+  deliverItem,
+  returnToCommandCenter,
+  untillNextTime} from './FleetService.js';
+  import {DroneStatus, PackageStatus} from './constants.js';
+
 // Build an application to operate a fleet of drones delivering goods:
 
 // The command center sends an instruction to the drone to pickup an item from the warehouse (only one at present).
@@ -21,20 +28,6 @@ import './App.css';
 // We would be looking for application design, object modeling, data modeling (if any), coding practices followed to evaluate your solution. You may want to include unit test cases to support your solution. 
 
 // We would like the code to be version controlled using Git. Please do not upload it to bitbucket or github but instead zip the entire code repository and send it to us.
-export const DroneStatus = {
-  WAITING_FOR_INSTRUCTIONS: "zzz",
-  ITEM_PICKUP: "Picking up from the warehouse",
-  ARRIVED_AT_DELIVERY_ADDRESS: "Knock! Knock!",
-  DELIVER_ITEM: "You've been served",
-  WAY_BACK_TO_COMMAND_CENTER: "on the way back"
-};
-
-export const PackageStatus = {
-  PROCESSING: "We're processing you order",
-  ITEM_PICKEDUP: "package pickedup  from the warehouse",
-  ON_THE_WAY: "Should reach you soon",
-  DELIVERD: "Delivered"
-};
 
 class App extends Component {
   constructor(props) {
@@ -124,39 +117,6 @@ class Drone extends Component {
         </div>
     );
   }
-}
-
-export const pickupItem = (drone) => {
-  // In real life this will make a HTTP call
-  // Let's keep things simple and assume there is a server processing these requests
-  return Promise.resolve({
-      item : 1, 
-      status: DroneStatus.ITEM_PICKUP
-  });
-}
-
-export const updateLocation = (drone) => {
-  return Promise.resolve({
-      status: DroneStatus.ARRIVED_AT_DELIVERY_ADDRESS
-  });
-}
-
-export const deliverItem = (drone) => {
-  return Promise.resolve({
-      status: DroneStatus.DELIVER_ITEM
-  });
-}
-
-export const returnToCommandCenter = (drone) => {
-  return Promise.resolve({
-      status: DroneStatus.WAY_BACK_TO_COMMAND_CENTER
-  });
-}
-
-export const untillNextTime = (drone) => {
-  return Promise.resolve({
-      status: DroneStatus.WAITING_FOR_INSTRUCTIONS
-  });
 }
 
 const timeout = (callback) => {
